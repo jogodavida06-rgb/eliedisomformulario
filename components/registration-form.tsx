@@ -371,12 +371,12 @@ export default function RegistrationForm() {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
         {/* Dados Pessoais */}
         <Card>
-          <CardContent className="pt-6">
-            <h2 className="text-xl font-semibold mb-4">Dados Pessoais</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
+            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Dados Pessoais</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="cpf">
                   CPF <span className="text-red-500">*</span>
@@ -426,9 +426,9 @@ export default function RegistrationForm() {
 
         {/* Contato */}
         <Card>
-          <CardContent className="pt-6">
-            <h2 className="text-xl font-semibold mb-4">Contato</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
+            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Contato</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-4">
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="email">
                   Email <span className="text-red-500">*</span>
@@ -478,9 +478,9 @@ export default function RegistrationForm() {
 
         {/* Endereço */}
         <Card>
-          <CardContent className="pt-6">
-            <h2 className="text-xl font-semibold mb-4">Endereço</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
+            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Endereço</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="cep">
                   CEP <span className="text-red-500">*</span>
@@ -578,8 +578,8 @@ export default function RegistrationForm() {
 
         {/* Plano e Chip */}
         <Card>
-          <CardContent className="pt-6">
-            <h2 className="text-xl font-semibold mb-4">Escolha seu Plano</h2>
+          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
+            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Escolha seu Plano</h2>
 
             <div className="space-y-4">
               <div className="space-y-2">
@@ -650,8 +650,8 @@ export default function RegistrationForm() {
 
         {/* Forma de Envio */}
         <Card>
-          <CardContent className="pt-6">
-            <h2 className="text-xl font-semibold mb-4">Forma de Envio</h2>
+          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
+            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Forma de Envio</h2>
             <RadioGroup
               value={formData.typeFrete}
               onValueChange={(value) => handleInputChange("typeFrete", value)}
