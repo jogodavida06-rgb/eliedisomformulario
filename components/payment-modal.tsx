@@ -116,49 +116,49 @@ export default function PaymentModal({ open, onOpenChange, billingId, amount }: 
       <DialogContent className="max-w-5xl p-0">
         {/* Header */}
         <div className="border-b px-6 py-4 flex items-center justify-between">
-          <DialogTitle className="text-2xl font-normal text-gray-800">Pagar Fatura</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold text-gray-900">Pagar Fatura</DialogTitle>
           <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8">
             <X className="h-5 w-5" />
           </Button>
         </div>
 
         {/* Payment Options */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-x">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-12">
           {/* Boleto */}
           <button
             onClick={handleGenerateBoleto}
             disabled={loadingBoleto}
-            className="p-12 hover:bg-gray-50 transition-colors text-center space-y-6 disabled:opacity-50"
+            className="flex flex-col items-center p-8 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors space-y-4 disabled:opacity-50"
           >
+            <h3 className="text-3xl font-bold text-gray-900">Boleto</h3>
             <div className="flex justify-center">
-              <FileText className="w-12 h-12 text-green-600" />
+              <FileText className="w-16 h-16 text-green-600" />
             </div>
-            <h3 className="text-4xl font-normal text-gray-900">Boleto</h3>
-            <p className="text-sm text-gray-400 px-4">Sistema de Boleto online (Federal Associados)</p>
+            <p className="text-sm text-gray-500 text-center">Sistema de Boleto online (Federal Associados)</p>
           </button>
 
           {/* Cartão */}
           <button
             onClick={() => setSelectedMethod("card")}
-            className="p-12 hover:bg-gray-50 transition-colors text-center space-y-6"
+            className="flex flex-col items-center p-8 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors space-y-4"
           >
+            <h3 className="text-3xl font-bold text-gray-900">Cartão</h3>
             <div className="flex justify-center">
-              <CreditCard className="w-12 h-12 text-green-600" />
+              <CreditCard className="w-16 h-16 text-green-600" />
             </div>
-            <h3 className="text-4xl font-normal text-gray-900">Cartão</h3>
-            <p className="text-sm text-gray-400 px-4">Para pagamento em cartão use está opção!.</p>
+            <p className="text-sm text-gray-500 text-center">Para pagamento em cartão use está opção!.</p>
           </button>
 
           {/* PIX */}
           <button
             onClick={() => setSelectedMethod("pix")}
-            className="p-12 hover:bg-gray-50 transition-colors text-center space-y-6"
+            className="flex flex-col items-center p-8 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors space-y-4"
           >
+            <h3 className="text-3xl font-bold text-gray-900">Pix</h3>
             <div className="flex justify-center">
-              <QrCode className="w-12 h-12 text-green-600" />
+              <QrCode className="w-16 h-16 text-green-600" />
             </div>
-            <h3 className="text-4xl font-normal text-gray-900">Pix</h3>
-            <p className="text-sm text-gray-400 px-4">Sistema de Pix on-line (Federal Associados)</p>
+            <p className="text-sm text-gray-500 text-center">Sistema de Pix on-line (Federal Associados)</p>
           </button>
         </div>
 
