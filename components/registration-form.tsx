@@ -47,7 +47,6 @@ const BRAZILIAN_STATES = [
 
 const PLANS = {
   VIVO: [
-    { id: "75", name: "40GB SEM LIGACAO", price: 49.9, esim: false },
     { id: "69", name: "80GB COM LIGACAO", price: 69.9, esim: true },
     { id: "61", name: "150GB COM LIGACAO", price: 99.9, esim: true },
   ],
@@ -581,27 +580,34 @@ export default function RegistrationForm() {
         <Card>
           <CardContent className="pt-6">
             <h2 className="text-xl font-semibold mb-4">Escolha seu Plano</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="typeChip">Tipo de Chip</Label>
-                <Select
+                <Label>Tipo de Chip</Label>
+                <RadioGroup
                   value={formData.typeChip}
                   onValueChange={(value) => {
                     handleInputChange("typeChip", value)
                     handleInputChange("plan_id", "")
                   }}
+                  className="flex gap-4"
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fisico">Físico</SelectItem>
-                    <SelectItem value="eSim">e-SIM</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="fisico" id="fisico" />
+                    <Label htmlFor="fisico" className="font-normal cursor-pointer">
+                      Físico
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="eSim" id="eSim-chip" />
+                    <Label htmlFor="eSim-chip" className="font-normal cursor-pointer">
+                      e-SIM
+                    </Label>
+                  </div>
+                </RadioGroup>
               </div>
 
-              <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2">
                 <Label htmlFor="plan">
                   Plano <span className="text-red-500">*</span>
                 </Label>
@@ -614,15 +620,25 @@ export default function RegistrationForm() {
                     <SelectValue placeholder="Selecione um plano" />
                   </SelectTrigger>
                   <SelectContent>
-                    {getAvailablePlans().map((plan) => (
-                      <div key={plan.id}>
-                        {plan.operator && (
-                          <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">{plan.operator}</div>
-                        )}
-                        <SelectItem key={plan.id} value={plan.id}>
-                          {plan.name} - R$ {plan.price.toFixed(2)}
-                        </SelectItem>
-                      </div>
+                    <div className="px-2 py-1.5 text-sm font-semibold" style={{ color: '#8B5CF6' }}>VIVO</div>
+                    {PLANS.VIVO.map((plan) => (
+                      <SelectItem key={plan.id} value={plan.id} disabled={formData.typeChip === "fisico" && plan.esim}>
+                        {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                      </SelectItem>
+                    ))}
+
+                    <div className="px-2 py-1.5 text-sm font-semibold mt-2" style={{ color: '#1E90FF' }}>TIM</div>
+                    {PLANS.TIM.map((plan) => (
+                      <SelectItem key={plan.id} value={plan.id} disabled={formData.typeChip === "fisico" && plan.esim}>
+                        {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                      </SelectItem>
+                    ))}
+
+                    <div className="px-2 py-1.5 text-sm font-semibold mt-2" style={{ color: '#DC143C' }}>CLARO</div>
+                    {PLANS.CLARO.map((plan) => (
+                      <SelectItem key={plan.id} value={plan.id} disabled={formData.typeChip === "fisico" && plan.esim}>
+                        {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
