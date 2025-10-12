@@ -12,6 +12,9 @@ export default function Home() {
           </div>
           <RegistrationForm />
         </div>
+        <footer className="text-center mt-8 text-sm text-gray-600">
+          <p>2025 © Federal Associados (CNPJ 29.383-343-0001/64) - Todos os direitos reservados |</p>
+        </footer>
       </div>
     </main>
   )
