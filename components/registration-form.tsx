@@ -659,17 +659,27 @@ export default function RegistrationForm() {
             >
               {formData.typeChip === "fisico" && (
                 <>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Carta" id="carta" />
-                    <Label htmlFor="carta" className="font-normal cursor-pointer">
-                      Enviar via Carta Registrada
-                    </Label>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Carta" id="carta" />
+                      <Label htmlFor="carta" className="font-normal cursor-pointer">
+                        Enviar via Carta Registrada
+                      </Label>
+                    </div>
+                    <p className="text-sm text-muted-foreground ml-6">
+                      Para quem vai receber o chip pelos Correios
+                    </p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="semFrete" id="semFrete" />
-                    <Label htmlFor="semFrete" className="font-normal cursor-pointer">
-                      Retirar na Associação ou com um Associado
-                    </Label>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="semFrete" id="semFrete" />
+                      <Label htmlFor="semFrete" className="font-normal cursor-pointer">
+                        Retirar na Associação ou com um Associado
+                      </Label>
+                    </div>
+                    <p className="text-sm text-muted-foreground ml-6">
+                      Se você vai retirar o chip pessoalmente com um representante ou no caso dos planos da Vivo, vai comprar um chip para ativar de forma imediata
+                    </p>
                   </div>
                 </>
               )}
