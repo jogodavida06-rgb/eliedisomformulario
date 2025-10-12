@@ -34,7 +34,7 @@ export default function PaymentModal({ open, onOpenChange, billingId, amount }: 
 
       const data = await response.json()
 
-      if (response.ok) {
+      if (response.ok && data.boleto_link) {
         setBoletoUrl(data.boleto_link)
         window.open(data.boleto_link, "_blank")
         toast({
