@@ -700,8 +700,8 @@ export default function RegistrationForm() {
           <Button type="button" variant="outline" onClick={() => window.history.back()}>
             Voltar
           </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? "Processando..." : "Continuar para Pagamento"}
+          <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
+            {loading ? "Processando..." : "Salvar"}
           </Button>
         </div>
       </form>
