@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Card, CardContent } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import PaymentModal from "@/components/payment-modal"
 import ErrorModal from "@/components/error-modal"
 
 const REFERRAL_ID = "110956" // Seu ID de indicação
@@ -306,18 +306,14 @@ export default function RegistrationForm() {
       const data = await response.json()
 
       if (response.ok) {
-        const selectedPlan = Object.values(PLANS)
-          .flat()
-          .find((plan) => plan.id === formData.plan_id)
-
-        setBillingId(data.billing_id)
-        setOrderAmount(selectedPlan?.price || 0)
-        setShowPaymentModal(true)
-
         toast({
-          title: "Cadastro realizado!",
-          description: "Agora escolha a forma de pagamento.",
+          title: "Cadastro realizado com sucesso!",
+          description: "Redirecionando para pagamento...",
         })
+
+        setTimeout(() => {
+          setShowPaymentModal(true)
+        }, 1000)
       } else {
         if (response.status === 422 && data.errors) {
           const errorFields = Object.keys(data.errors)
@@ -706,12 +702,20 @@ export default function RegistrationForm() {
         </div>
       </form>
 
-      <PaymentModal
-        open={showPaymentModal}
-        onOpenChange={setShowPaymentModal}
-        billingId={billingId}
-        amount={orderAmount}
-      />
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent className="max-w-6xl h-[90vh] p-0">
+          <DialogHeader className="px-6 py-4 border-b">
+            <DialogTitle className="text-xl font-semibold">Área de Pagamento - Federal Associados</DialogTitle>
+          </DialogHeader>
+          <div className="w-full h-full">
+            <iframe
+              src="https://federalassociados.com.br/boletos"
+              className="w-full h-full border-0"
+              title="Pagamento Federal Associados"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <ErrorModal open={showErrorModal} onOpenChange={setShowErrorModal} message={errorMessage} />
     </>
