@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -70,6 +70,7 @@ export default function RegistrationForm() {
   const [orderAmount, setOrderAmount] = useState<number>(0)
   const [cpfValidated, setCpfValidated] = useState(false)
   const [emailValidated, setEmailValidated] = useState(false)
+  const [showWelcomeVideo, setShowWelcomeVideo] = useState(false)
 
   const [formData, setFormData] = useState({
     cpf: "",
@@ -307,12 +308,12 @@ export default function RegistrationForm() {
       if (response.ok) {
         toast({
           title: "Cadastro realizado com sucesso!",
-          description: "Redirecionando para pagamento...",
+          description: "Aguarde...",
         })
 
         setTimeout(() => {
-          window.location.href = "https://federalassociados.com.br/boletos"
-        }, 1500)
+          setShowWelcomeVideo(true)
+        }, 1000)
       } else {
         if (response.status === 422 && data.errors) {
           const errorFields = Object.keys(data.errors)
@@ -362,6 +363,25 @@ export default function RegistrationForm() {
         .filter((plan) => plan.esim)
     }
     return Object.values(PLANS).flat()
+  }
+
+  useEffect(() => {
+    const video = document.createElement('video')
+    video.preload = 'auto'
+    video.src = 'https://myehbxfidszreorsaexi.supabase.co/storage/v1/object/public/adesao/adesao.mp4'
+    video.load()
+  }, [])
+
+  if (showWelcomeVideo) {
+    return (
+      <div className="fixed inset-0 z-50 bg-white">
+        <iframe
+          src="/welcome-video"
+          className="w-full h-full border-0"
+          title="Video de Boas-Vindas"
+        />
+      </div>
+    )
   }
 
   return (
