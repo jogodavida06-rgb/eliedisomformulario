@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Card, CardContent } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import ErrorModal from "@/components/error-modal"
 
@@ -312,8 +311,8 @@ export default function RegistrationForm() {
         })
 
         setTimeout(() => {
-          setShowPaymentModal(true)
-        }, 1000)
+          window.location.href = "https://federalassociados.com.br/boletos"
+        }, 1500)
       } else {
         if (response.status === 422 && data.errors) {
           const errorFields = Object.keys(data.errors)
@@ -701,21 +700,6 @@ export default function RegistrationForm() {
           </Button>
         </div>
       </form>
-
-      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
-        <DialogContent className="max-w-6xl h-[90vh] p-0">
-          <DialogHeader className="px-6 py-4 border-b">
-            <DialogTitle className="text-xl font-semibold">Área de Pagamento - Federal Associados</DialogTitle>
-          </DialogHeader>
-          <div className="w-full h-full">
-            <iframe
-              src="https://federalassociados.com.br/boletos"
-              className="w-full h-full border-0"
-              title="Pagamento Federal Associados"
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <ErrorModal open={showErrorModal} onOpenChange={setShowErrorModal} message={errorMessage} />
     </>
