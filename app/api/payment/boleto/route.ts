@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
     const { billing_id } = await request.json()
 
     const formData = new URLSearchParams()
-    formData.append("_token", "oCqwAglu4VySDRcwWNqj81UMfbKHCS2vWQfARkzu")
+    formData.append("_token", "VLjf9CpfbxGDZf6pJBskWZPwgzAitvdRdvLmFkP3")
     formData.append("billing_id", billing_id)
 
     const response = await fetch("https://federalassociados.com.br/registerBilletCaixa/externo", {
