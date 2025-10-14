@@ -72,6 +72,7 @@ export default function RegistrationForm() {
   const [emailValidated, setEmailValidated] = useState(false)
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false)
 
+  const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     cpf: "",
     birth: "",
@@ -263,11 +264,74 @@ export default function RegistrationForm() {
     }
   }
 
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 1:
+        if (!formData.plan_id) {
+          setErrorMessage("Por favor, selecione um plano antes de continuar.")
+          setShowErrorModal(true)
+          return false
+        }
+        return true
+      case 2:
+        if (!formData.cpf || !formData.birth || !formData.name) {
+          setErrorMessage("Por favor, preencha todos os campos obrigatórios.")
+          setShowErrorModal(true)
+          return false
+        }
+        if (!validateCPF(formData.cpf)) {
+          setErrorMessage("CPF inválido! Por favor, verifique o CPF informado.")
+          setShowErrorModal(true)
+          return false
+        }
+        return true
+      case 3:
+        if (!formData.email || !formData.phone || !formData.cell) {
+          setErrorMessage("Por favor, preencha todos os campos obrigatórios.")
+          setShowErrorModal(true)
+          return false
+        }
+        return true
+      case 4:
+        if (!formData.cep || !formData.district || !formData.city || !formData.state || !formData.street) {
+          setErrorMessage("Por favor, preencha todos os campos obrigatórios.")
+          setShowErrorModal(true)
+          return false
+        }
+        return true
+      case 5:
+        if (!formData.typeFrete) {
+          setErrorMessage("Por favor, selecione a forma de envio antes de continuar.")
+          setShowErrorModal(true)
+          return false
+        }
+        return true
+      default:
+        return true
+    }
+  }
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, 5))
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  const handleBack = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!validateStep(5)) {
+      return
+    }
+
     setLoading(true)
 
-    // Validações
     if (!validateCPF(formData.cpf)) {
       setErrorMessage("CPF inválido! Por favor, verifique o CPF informado.")
       setShowErrorModal(true)
@@ -387,7 +451,8 @@ export default function RegistrationForm() {
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-        {/* Plano e Chip */}
+        {/* Etapa 1: Plano e Chip */}
+        {currentStep === 1 && (
         <Card>
           <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
             <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Escolha seu Plano</h2>
@@ -458,8 +523,10 @@ export default function RegistrationForm() {
             </div>
           </CardContent>
         </Card>
+        )}
 
-        {/* Dados do Associado */}
+        {/* Etapa 2: Dados do Associado */}
+        {currentStep === 2 && (
         <Card>
           <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
             <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Dados do Associado</h2>
@@ -510,8 +577,10 @@ export default function RegistrationForm() {
             </div>
           </CardContent>
         </Card>
+        )}
 
-        {/* Contato */}
+        {/* Etapa 3: Contato */}
+        {currentStep === 3 && (
         <Card>
           <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
             <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Contato</h2>
@@ -562,8 +631,10 @@ export default function RegistrationForm() {
             </div>
           </CardContent>
         </Card>
+        )}
 
-        {/* Endereço */}
+        {/* Etapa 4: Endereço */}
+        {currentStep === 4 && (
         <Card>
           <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
             <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Endereço</h2>
@@ -662,8 +733,10 @@ export default function RegistrationForm() {
             </div>
           </CardContent>
         </Card>
+        )}
 
-        {/* Forma de Envio */}
+        {/* Etapa 5: Forma de Envio */}
+        {currentStep === 5 && (
         <Card>
           <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
             <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Forma de Envio</h2>
@@ -709,15 +782,29 @@ export default function RegistrationForm() {
             </RadioGroup>
           </CardContent>
         </Card>
+        )}
 
-        {/* Botões */}
+        {/* Botões de Navegação */}
         <div className="flex gap-4 justify-end">
-          <Button type="button" variant="outline" onClick={() => window.history.back()}>
-            Voltar
-          </Button>
-          <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
-            {loading ? "Processando..." : "Salvar"}
-          </Button>
+          {currentStep > 1 && (
+            <Button type="button" variant="outline" onClick={handleBack}>
+              Voltar
+            </Button>
+          )}
+          {currentStep < 5 ? (
+            <Button type="button" onClick={handleNext} className="bg-green-600 hover:bg-green-700 text-white">
+              Continuar
+            </Button>
+          ) : (
+            <>
+              <Button type="button" variant="outline" onClick={handleBack}>
+                Voltar
+              </Button>
+              <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
+                {loading ? "Processando..." : "Salvar"}
+              </Button>
+            </>
+          )}
         </div>
       </form>
 
