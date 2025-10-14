@@ -70,7 +70,6 @@ export default function RegistrationForm() {
   const [orderAmount, setOrderAmount] = useState<number>(0)
   const [cpfValidated, setCpfValidated] = useState(false)
   const [emailValidated, setEmailValidated] = useState(false)
-  const [showWelcomeVideo, setShowWelcomeVideo] = useState(false)
 
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
@@ -372,12 +371,19 @@ export default function RegistrationForm() {
       if (response.ok) {
         toast({
           title: "Cadastro realizado com sucesso!",
-          description: "Aguarde...",
+          description: "Redirecionando para o WhatsApp...",
         })
 
+        const selectedPlan = getAvailablePlans().find(plan => plan.id === formData.plan_id)
+        const planName = selectedPlan ? selectedPlan.name : "Não identificado"
+
+        const whatsappMessage = encodeURIComponent(
+          `Acabei de realizar meu cadastro.\n\nPlano escolhido: ${planName}\n\nQuais são os próximos passos?`
+        )
+
         setTimeout(() => {
-          setShowWelcomeVideo(true)
-        }, 1000)
+          window.location.href = `https://wa.me/55981321396?text=${whatsappMessage}`
+        }, 1500)
       } else {
         if (response.status === 422 && data.errors) {
           const errorFields = Object.keys(data.errors)
@@ -429,24 +435,6 @@ export default function RegistrationForm() {
     return Object.values(PLANS).flat()
   }
 
-  useEffect(() => {
-    const video = document.createElement('video')
-    video.preload = 'auto'
-    video.src = 'https://myehbxfidszreorsaexi.supabase.co/storage/v1/object/public/adesao/adesao.mp4'
-    video.load()
-  }, [])
-
-  if (showWelcomeVideo) {
-    return (
-      <div className="fixed inset-0 z-50 bg-white">
-        <iframe
-          src="/welcome-video"
-          className="w-full h-full border-0"
-          title="Video de Boas-Vindas"
-        />
-      </div>
-    )
-  }
 
   return (
     <>
