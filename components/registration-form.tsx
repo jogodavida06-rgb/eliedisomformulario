@@ -374,12 +374,27 @@ export default function RegistrationForm() {
           description: "Redirecionando para o WhatsApp...",
         })
 
+        const allPlans = Object.values(PLANS).flat()
+        const selectedPlan = allPlans.find(plan => plan.id === formData.plan_id)
+        const planName = selectedPlan ? selectedPlan.name : formData.plan_id
+
+        const chipType = formData.typeChip === "fisico" ? "Físico" : "e-SIM"
+
+        let shippingType = ""
+        if (formData.typeFrete === "Carta") {
+          shippingType = "Enviar via Carta Registrada"
+        } else if (formData.typeFrete === "semFrete") {
+          shippingType = "Retirar na Associação ou com um Associado"
+        } else if (formData.typeFrete === "eSim") {
+          shippingType = "Sem a necessidade de envio (e-SIM)"
+        }
+
         const whatsappMessage = encodeURIComponent(
-          `Acabei de realizar meu cadastro.\n\nMeu plano escolhido foi: \n\nQuais são os próximos passos?`
+          `Olá! Acabei de realizar meu cadastro.\n\nPlano escolhido: ${planName}.\nTipo de chip: ${chipType}.\nForma de envio: ${shippingType}.\n\nQuais os próximos passos?`
         )
 
         setTimeout(() => {
-          window.location.href = `https://wa.me/5584981321396?text=${whatsappMessage}`
+          window.location.href = `https://api.whatsapp.com/send?phone=5584981321396&text=${whatsappMessage}`
         }, 1500)
       } else {
         if (response.status === 422 && data.errors) {
