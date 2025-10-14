@@ -374,9 +374,24 @@ export default function RegistrationForm() {
           description: "Redirecionando para o WhatsApp...",
         })
 
-        const allPlans = Object.values(PLANS).flat()
-        const selectedPlan = allPlans.find(plan => plan.id === formData.plan_id)
-        const planName = selectedPlan ? selectedPlan.name : formData.plan_id
+        let carrier = ""
+        let planName = ""
+
+        if (PLANS.VIVO.find(plan => plan.id === formData.plan_id)) {
+          carrier = "Vivo"
+          const selectedPlan = PLANS.VIVO.find(plan => plan.id === formData.plan_id)
+          planName = selectedPlan ? selectedPlan.name : formData.plan_id
+        } else if (PLANS.TIM.find(plan => plan.id === formData.plan_id)) {
+          carrier = "Tim"
+          const selectedPlan = PLANS.TIM.find(plan => plan.id === formData.plan_id)
+          planName = selectedPlan ? selectedPlan.name : formData.plan_id
+        } else if (PLANS.CLARO.find(plan => plan.id === formData.plan_id)) {
+          carrier = "Claro"
+          const selectedPlan = PLANS.CLARO.find(plan => plan.id === formData.plan_id)
+          planName = selectedPlan ? selectedPlan.name : formData.plan_id
+        }
+
+        const fullPlanName = `${carrier} ${planName}`
 
         const chipType = formData.typeChip === "fisico" ? "Físico" : "e-SIM"
 
@@ -390,7 +405,7 @@ export default function RegistrationForm() {
         }
 
         const whatsappMessage = encodeURIComponent(
-          `Olá! Acabei de realizar meu cadastro.\n\nPlano escolhido: ${planName}.\nTipo de chip: ${chipType}.\nForma de envio: ${shippingType}.\n\nQuais os próximos passos?`
+          `Acabei de realizar meu cadastro.\n\nPlano escolhido: ${fullPlanName}.\nTipo de chip: ${chipType}.\nForma de envio: ${shippingType}.\n\nQuais os próximos passos?`
         )
 
         setTimeout(() => {
