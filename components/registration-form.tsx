@@ -778,11 +778,16 @@ export default function RegistrationForm() {
         )}
 
         {/* Botões de Navegação */}
-        <div className="flex gap-4 justify-end">
+        <div className="flex gap-4 justify-end items-center">
           {currentStep > 1 && (
             <Button type="button" variant="outline" onClick={handleBack}>
               Voltar
             </Button>
+          )}
+          {currentStep === 1 && (
+            <p className="text-sm text-gray-600 mr-auto">
+              Contrate seu plano sem consulta ao SPC/Serasa e sem fidelidade.
+            </p>
           )}
           {currentStep < 5 ? (
             <Button type="button" onClick={handleNext} className="bg-green-600 hover:bg-green-700 text-white">
