@@ -519,24 +519,24 @@ export default function RegistrationForm() {
                     <SelectValue placeholder="Selecione um plano" />
                   </SelectTrigger>
                   <SelectContent>
-                    <div className="px-2 py-1.5 text-sm font-semibold pointer-events-none" style={{ color: '#8B5CF6' }}>VIVO</div>
+                    <div className="px-2 py-1.5 text-sm font-semibold text-center pointer-events-none" style={{ color: '#8B5CF6' }}>VIVO</div>
                     {PLANS.VIVO.map((plan) => (
                       <SelectItem key={plan.id} value={plan.id} className="text-gray-900 font-medium">
-                        {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                        VIVO - {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
                       </SelectItem>
                     ))}
 
-                    <div className="px-2 py-1.5 text-sm font-semibold mt-2 pointer-events-none" style={{ color: '#1E90FF' }}>TIM</div>
+                    <div className="px-2 py-1.5 text-sm font-semibold text-center mt-2 pointer-events-none" style={{ color: '#1E90FF' }}>TIM</div>
                     {PLANS.TIM.map((plan) => (
                       <SelectItem key={plan.id} value={plan.id} className="text-gray-900 font-medium">
-                        {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                        TIM - {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
                       </SelectItem>
                     ))}
 
-                    <div className="px-2 py-1.5 text-sm font-semibold mt-2 pointer-events-none" style={{ color: '#DC143C' }}>CLARO</div>
+                    <div className="px-2 py-1.5 text-sm font-semibold text-center mt-2 pointer-events-none" style={{ color: '#DC143C' }}>CLARO</div>
                     {PLANS.CLARO.map((plan) => (
                       <SelectItem key={plan.id} value={plan.id} className="text-gray-900 font-medium">
-                        {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                        CLARO - {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
                       </SelectItem>
                     ))}
                   </SelectContent>
