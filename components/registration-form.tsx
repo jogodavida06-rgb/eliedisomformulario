@@ -451,6 +451,14 @@ export default function RegistrationForm() {
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+        {/* Título e Subtítulo - apenas no primeiro passo */}
+        {currentStep === 1 && (
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Seja bem-vindo ao Registro de Associados</h1>
+            <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">Patrocinador: Francisco Eliedisom Dos Santos</p>
+          </div>
+        )}
+
         {/* Etapa 1: Plano e Chip */}
         {currentStep === 1 && (
         <Card>
