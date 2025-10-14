@@ -374,11 +374,8 @@ export default function RegistrationForm() {
           description: "Redirecionando para o WhatsApp...",
         })
 
-        const selectedPlan = getAvailablePlans().find(plan => plan.id === formData.plan_id)
-        const planName = selectedPlan ? selectedPlan.name : "Não identificado"
-
         const whatsappMessage = encodeURIComponent(
-          `Acabei de realizar meu cadastro.\n\nPlano escolhido: ${planName}\n\nQuais são os próximos passos?`
+          `Acabei de realizar meu cadastro.\n\nMeu plano escolhido foi: \n\nQuais são os próximos passos?`
         )
 
         setTimeout(() => {
