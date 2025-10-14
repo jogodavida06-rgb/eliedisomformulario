@@ -382,7 +382,7 @@ export default function RegistrationForm() {
         )
 
         setTimeout(() => {
-          window.location.href = `https://wa.me/55981321396?text=${whatsappMessage}`
+          window.location.href = `https://wa.me/5584981321396?text=${whatsappMessage}`
         }, 1500)
       } else {
         if (response.status === 422 && data.errors) {
@@ -792,14 +792,9 @@ export default function RegistrationForm() {
               Continuar
             </Button>
           ) : (
-            <>
-              <Button type="button" variant="outline" onClick={handleBack}>
-                Voltar
-              </Button>
-              <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
-                {loading ? "Processando..." : "Salvar"}
-              </Button>
-            </>
+            <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
+              {loading ? "Processando..." : "Salvar"}
+            </Button>
           )}
         </div>
       </form>
