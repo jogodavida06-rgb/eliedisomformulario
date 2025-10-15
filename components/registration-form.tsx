@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +11,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Card, CardContent } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import ErrorModal from "@/components/error-modal"
+
+const REFERRAL_ID = "110956"
 
 const BRAZILIAN_STATES = [
   { value: "AC", label: "Acre" },
@@ -44,7 +46,6 @@ const BRAZILIAN_STATES = [
 
 const PLANS = {
   VIVO: [
-    { id: "178", name: "40GB COM LIGACAO", price: 49.9, esim: true },
     { id: "69", name: "80GB COM LIGACAO", price: 69.9, esim: true },
     { id: "61", name: "150GB COM LIGACAO", price: 99.9, esim: true },
   ],
@@ -59,11 +60,7 @@ const PLANS = {
   ],
 }
 
-interface RegistrationFormProps {
-  representativeId?: string
-}
-
-export default function RegistrationForm({ representativeId: propRepresentativeId }: RegistrationFormProps = {}) {
+export default function RegistrationForm() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
@@ -73,45 +70,6 @@ export default function RegistrationForm({ representativeId: propRepresentativeI
   const [orderAmount, setOrderAmount] = useState<number>(0)
   const [cpfValidated, setCpfValidated] = useState(false)
   const [emailValidated, setEmailValidated] = useState(false)
-  const [representativeId, setRepresentativeId] = useState<string | null>(null)
-  const [representativeWhatsapp, setRepresentativeWhatsapp] = useState<string | null>(null)
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
-  const [isAuthorized, setIsAuthorized] = useState(false)
-
-  useEffect(() => {
-    const checkRepresentativeAuthorization = async () => {
-      const indicador = propRepresentativeId
-
-      if (!indicador) {
-        setErrorMessage('Você não está autorizado a abrir esse formulário. Procure seu líder ou representante oficial para obter um link válido.')
-        setShowErrorModal(true)
-        setIsCheckingAuth(false)
-        return
-      }
-
-      try {
-        const response = await fetch(`/api/representatives/check?id=${indicador}`)
-        const data = await response.json()
-
-        if (data.authorized && data.representative) {
-          setRepresentativeId(data.representative.id.toString())
-          setRepresentativeWhatsapp(data.representative.whatsapp)
-          setIsAuthorized(true)
-        } else {
-          setErrorMessage(data.message || 'Você não está autorizado a abrir esse formulário. Procure seu líder ou representante oficial para obter um link válido.')
-          setShowErrorModal(true)
-        }
-      } catch (error) {
-        console.error('Error checking authorization:', error)
-        setErrorMessage('Erro ao verificar autorização. Por favor, tente novamente.')
-        setShowErrorModal(true)
-      } finally {
-        setIsCheckingAuth(false)
-      }
-    }
-
-    checkRepresentativeAuthorization()
-  }, [propRepresentativeId])
 
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
@@ -402,7 +360,7 @@ export default function RegistrationForm({ representativeId: propRepresentativeI
         },
         body: JSON.stringify({
           ...formData,
-          father: representativeId,
+          father: REFERRAL_ID,
           status: "0",
           type: "Recorrente",
         }),
@@ -450,10 +408,8 @@ export default function RegistrationForm({ representativeId: propRepresentativeI
           `Acabei de realizar meu cadastro.\n\nPlano escolhido: ${fullPlanName}.\nTipo de chip: ${chipType}.\nForma de envio: ${shippingType}.\n\nQuais os próximos passos?`
         )
 
-        const whatsappNumber = representativeWhatsapp || '5584981321396'
-
         setTimeout(() => {
-          window.location.href = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${whatsappMessage}`
+          window.location.href = `https://api.whatsapp.com/send?phone=5584981321396&text=${whatsappMessage}`
         }, 1500)
       } else {
         if (response.status === 422 && data.errors) {
@@ -507,21 +463,6 @@ export default function RegistrationForm({ representativeId: propRepresentativeI
   }
 
 
-  if (isCheckingAuth) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verificando autorização...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!isAuthorized) {
-    return null
-  }
-
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
@@ -529,7 +470,7 @@ export default function RegistrationForm({ representativeId: propRepresentativeI
         {currentStep === 1 && (
           <div className="text-center mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Seja bem-vindo ao Registro de Associados</h1>
-            <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">Representante ID: {representativeId}</p>
+            <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">Patrocinador: Francisco Eliedisom Dos Santos</p>
           </div>
         )}
 
