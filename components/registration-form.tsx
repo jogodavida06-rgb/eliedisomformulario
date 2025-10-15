@@ -12,8 +12,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import ErrorModal from "@/components/error-modal"
 
-const REFERRAL_ID = "110956"
-
 const BRAZILIAN_STATES = [
   { value: "AC", label: "Acre" },
   { value: "AL", label: "Alagoas" },
@@ -60,7 +58,12 @@ const PLANS = {
   ],
 }
 
-export default function RegistrationForm() {
+interface RegistrationFormProps {
+  repId: number
+  whatsapp: string
+}
+
+export default function RegistrationForm({ repId, whatsapp }: RegistrationFormProps) {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
@@ -360,7 +363,7 @@ export default function RegistrationForm() {
         },
         body: JSON.stringify({
           ...formData,
-          father: REFERRAL_ID,
+          father: String(repId),
           status: "0",
           type: "Recorrente",
         }),
@@ -409,7 +412,7 @@ export default function RegistrationForm() {
         )
 
         setTimeout(() => {
-          window.location.href = `https://api.whatsapp.com/send?phone=5584981321396&text=${whatsappMessage}`
+          window.location.href = `https://api.whatsapp.com/send?phone=${whatsapp}&text=${whatsappMessage}`
         }, 1500)
       } else {
         if (response.status === 422 && data.errors) {
