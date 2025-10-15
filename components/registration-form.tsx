@@ -59,7 +59,11 @@ const PLANS = {
   ],
 }
 
-export default function RegistrationForm() {
+interface RegistrationFormProps {
+  representativeId?: string
+}
+
+export default function RegistrationForm({ representativeId: propRepresentativeId }: RegistrationFormProps = {}) {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
@@ -76,8 +80,7 @@ export default function RegistrationForm() {
 
   useEffect(() => {
     const checkRepresentativeAuthorization = async () => {
-      const urlParams = new URLSearchParams(window.location.search)
-      const indicador = urlParams.get('indicador')
+      const indicador = propRepresentativeId
 
       if (!indicador) {
         setErrorMessage('Você não está autorizado a abrir esse formulário. Procure seu líder ou representante oficial para obter um link válido.')
@@ -108,7 +111,7 @@ export default function RegistrationForm() {
     }
 
     checkRepresentativeAuthorization()
-  }, [])
+  }, [propRepresentativeId])
 
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({

@@ -9,11 +9,13 @@ Sistema de cadastro e pagamento para a Federal Associados com integração de pa
 - ✅ Busca automática de endereço por CEP (ViaCEP)
 - ✅ Seleção de planos (Vivo, TIM, Claro)
 - ✅ Suporte para chip físico e e-SIM
+- ✅ Sistema de autorização de representantes com lista controlada
+- ✅ Captura automática do ID do representante via URL
+- ✅ Redirecionamento para WhatsApp específico do representante
 - ✅ Múltiplas formas de pagamento:
   - PIX (com QR Code)
   - Cartão de Crédito
   - Boleto Bancário
-- ✅ Link de indicação integrado (ID: 110956)
 
 ## 🔧 Configuração
 
@@ -53,29 +55,55 @@ npm run dev
 
 Acesse: [http://localhost:3000](http://localhost:3000)
 
-## 📋 Próximos Passos
+## 🔗 Como Funciona o Sistema de Representantes
 
-Para que o sistema funcione completamente e você receba suas comissões:
+### URLs Personalizadas
 
-1. **Integração com Federal Associados**
-   - Configure a API key da Federal Associados
-   - Teste o endpoint de registro
-   - Verifique se o ID de indicação (110956) está sendo enviado corretamente
+Cada representante possui uma URL única com seu ID:
 
-2. **Configuração do MercadoPago**
-   - Crie uma conta no MercadoPago
-   - Configure as credenciais de produção
-   - Teste os pagamentos em ambiente sandbox primeiro
+```
+https://federalassociadoscadastro.shop/110956
+```
 
-3. **Validações adicionais**
-   - Implementar verificação de CPF/email duplicado
-   - Adicionar validação de cupons de desconto
-   - Configurar webhooks para confirmação de pagamento
+Onde `110956` é o ID único do representante.
 
-4. **Deploy**
-   - Faça deploy na Vercel ou outro provedor
-   - Configure as variáveis de ambiente no ambiente de produção
-   - Teste todo o fluxo em produção
+### Processo de Autorização
+
+1. **Acesso ao Formulário**: Quando alguém acessa uma URL com ID, o sistema verifica automaticamente se o ID está autorizado
+2. **Verificação**: O ID é verificado na lista de representantes autorizados no banco de dados
+3. **Aprovação**: Se autorizado, o formulário abre normalmente com o ID do representante já vinculado
+4. **Bloqueio**: Se não autorizado, uma mensagem de erro é exibida e o formulário não abre
+
+### Adicionando Novos Representantes
+
+Para adicionar um novo representante autorizado, envie uma requisição POST para:
+
+```bash
+POST /api/representatives/add
+Content-Type: application/json
+
+{
+  "id": "134684",
+  "whatsapp": "558481321396"
+}
+```
+
+Exemplo usando curl:
+
+```bash
+curl -X POST https://federalassociadoscadastro.shop/api/representatives/add \
+  -H "Content-Type: application/json" \
+  -d '{"id":"134684","whatsapp":"558481321396"}'
+```
+
+### Fluxo Completo
+
+1. Cliente acessa o link do representante (ex: `.../110956`)
+2. Sistema verifica se o ID está autorizado
+3. Se autorizado, formulário abre com ID do representante já vinculado
+4. Cliente preenche o formulário e finaliza o cadastro
+5. Após salvar, cliente é redirecionado para o WhatsApp do representante
+6. Representante recebe a comissão pela venda registrada
 
 ## 🔐 Segurança
 
