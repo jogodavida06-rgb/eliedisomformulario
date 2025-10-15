@@ -13,6 +13,13 @@ import { useToast } from "@/hooks/use-toast"
 import ErrorModal from "@/components/error-modal"
 
 const REFERRAL_ID = "110956"
+const DEFAULT_WHATSAPP = "5584981321396"
+
+interface RegistrationFormProps {
+  repId?: string
+  repWhatsApp?: string
+  repName?: string
+}
 
 const BRAZILIAN_STATES = [
   { value: "AC", label: "Acre" },
@@ -60,7 +67,7 @@ const PLANS = {
   ],
 }
 
-export default function RegistrationForm() {
+export default function RegistrationForm({ repId, repWhatsApp, repName }: RegistrationFormProps = {}) {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
@@ -360,7 +367,7 @@ export default function RegistrationForm() {
         },
         body: JSON.stringify({
           ...formData,
-          father: REFERRAL_ID,
+          father: repId || REFERRAL_ID,
           status: "0",
           type: "Recorrente",
         }),
@@ -408,8 +415,10 @@ export default function RegistrationForm() {
           `Acabei de realizar meu cadastro.\n\nPlano escolhido: ${fullPlanName}.\nTipo de chip: ${chipType}.\nForma de envio: ${shippingType}.\n\nQuais os próximos passos?`
         )
 
+        const whatsappNumber = repWhatsApp || DEFAULT_WHATSAPP
+
         setTimeout(() => {
-          window.location.href = `https://api.whatsapp.com/send?phone=5584981321396&text=${whatsappMessage}`
+          window.location.href = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${whatsappMessage}`
         }, 1500)
       } else {
         if (response.status === 422 && data.errors) {
@@ -470,7 +479,9 @@ export default function RegistrationForm() {
         {currentStep === 1 && (
           <div className="text-center mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Seja bem-vindo ao Registro de Associados</h1>
-            <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">Patrocinador: Francisco Eliedisom Dos Santos</p>
+            <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">
+              Patrocinador: {repName || "Francisco Eliedisom Dos Santos"}
+            </p>
           </div>
         )}
 
