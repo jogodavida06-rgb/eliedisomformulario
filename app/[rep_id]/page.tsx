@@ -7,8 +7,13 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-export default async function RepPage({ params }: { params: { rep_id: string } }) {
-  const repId = parseInt(params.rep_id)
+export default async function RepPage({
+  params
+}: {
+  params: Promise<{ rep_id: string }>
+}) {
+  const { rep_id } = await params
+  const repId = parseInt(rep_id)
 
   if (isNaN(repId)) {
     notFound()
