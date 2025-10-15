@@ -12,8 +12,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import ErrorModal from "@/components/error-modal"
 
-const REFERRAL_ID = "110956" // Seu ID de indicação
-
 const BRAZILIAN_STATES = [
   { value: "AC", label: "Acre" },
   { value: "AL", label: "Alagoas" },
@@ -71,6 +69,46 @@ export default function RegistrationForm() {
   const [orderAmount, setOrderAmount] = useState<number>(0)
   const [cpfValidated, setCpfValidated] = useState(false)
   const [emailValidated, setEmailValidated] = useState(false)
+  const [representativeId, setRepresentativeId] = useState<string | null>(null)
+  const [representativeWhatsapp, setRepresentativeWhatsapp] = useState<string | null>(null)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+
+  useEffect(() => {
+    const checkRepresentativeAuthorization = async () => {
+      const urlParams = new URLSearchParams(window.location.search)
+      const indicador = urlParams.get('indicador')
+
+      if (!indicador) {
+        setErrorMessage('Você não está autorizado a abrir esse formulário. Procure seu líder ou representante oficial para obter um link válido.')
+        setShowErrorModal(true)
+        setIsCheckingAuth(false)
+        return
+      }
+
+      try {
+        const response = await fetch(`/api/representatives/check?id=${indicador}`)
+        const data = await response.json()
+
+        if (data.authorized && data.representative) {
+          setRepresentativeId(data.representative.id.toString())
+          setRepresentativeWhatsapp(data.representative.whatsapp)
+          setIsAuthorized(true)
+        } else {
+          setErrorMessage(data.message || 'Você não está autorizado a abrir esse formulário. Procure seu líder ou representante oficial para obter um link válido.')
+          setShowErrorModal(true)
+        }
+      } catch (error) {
+        console.error('Error checking authorization:', error)
+        setErrorMessage('Erro ao verificar autorização. Por favor, tente novamente.')
+        setShowErrorModal(true)
+      } finally {
+        setIsCheckingAuth(false)
+      }
+    }
+
+    checkRepresentativeAuthorization()
+  }, [])
 
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
@@ -361,7 +399,7 @@ export default function RegistrationForm() {
         },
         body: JSON.stringify({
           ...formData,
-          father: REFERRAL_ID,
+          father: representativeId,
           status: "0",
           type: "Recorrente",
         }),
@@ -409,8 +447,10 @@ export default function RegistrationForm() {
           `Acabei de realizar meu cadastro.\n\nPlano escolhido: ${fullPlanName}.\nTipo de chip: ${chipType}.\nForma de envio: ${shippingType}.\n\nQuais os próximos passos?`
         )
 
+        const whatsappNumber = representativeWhatsapp || '5584981321396'
+
         setTimeout(() => {
-          window.location.href = `https://api.whatsapp.com/send?phone=5584981321396&text=${whatsappMessage}`
+          window.location.href = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${whatsappMessage}`
         }, 1500)
       } else {
         if (response.status === 422 && data.errors) {
@@ -464,6 +504,21 @@ export default function RegistrationForm() {
   }
 
 
+  if (isCheckingAuth) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando autorização...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthorized) {
+    return null
+  }
+
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
@@ -471,7 +526,7 @@ export default function RegistrationForm() {
         {currentStep === 1 && (
           <div className="text-center mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Seja bem-vindo ao Registro de Associados</h1>
-            <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">Patrocinador: Francisco Eliedisom Dos Santos</p>
+            <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">Representante ID: {representativeId}</p>
           </div>
         )}
 
