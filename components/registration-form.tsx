@@ -2,17 +2,17 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Card, CardContent } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import ErrorModal from "@/components/error-modal"
+import { Shield, CircleCheck, Smartphone, User, Phone, MapPin, Package } from "lucide-react"
 
-const REFERRAL_ID = "127251"
+const REFERRAL_ID = "110956"
 const DEFAULT_WHATSAPP = "5584981321396"
 
 interface RegistrationFormProps {
@@ -71,11 +71,8 @@ const PLANS = {
 export default function RegistrationForm({ repId, repWhatsApp, repName }: RegistrationFormProps = {}) {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
-  const [billingId, setBillingId] = useState<string>("")
-  const [orderAmount, setOrderAmount] = useState<number>(0)
   const [cpfValidated, setCpfValidated] = useState(false)
   const [emailValidated, setEmailValidated] = useState(false)
 
@@ -161,7 +158,6 @@ export default function RegistrationForm({ repId, repWhatsApp, repName }: Regist
     const cleanCPF = cpf.replace(/\D/g, "")
     if (cleanCPF.length !== 11) return false
 
-    // Validação básica de CPF
     if (/^(\d)\1{10}$/.test(cleanCPF)) return false
 
     let sum = 0
@@ -190,7 +186,6 @@ export default function RegistrationForm({ repId, repWhatsApp, repName }: Regist
     if (cleanCPF.length !== 11 || !birth) return
 
     try {
-      // Format birth date from YYYY-MM-DD to DD-MM-YYYY
       const [year, month, day] = birth.split("-")
       const formattedBirth = `${day}-${month}-${year}`
 
@@ -200,7 +195,6 @@ export default function RegistrationForm({ repId, repWhatsApp, repName }: Regist
       const data = await response.json()
 
       if (data.data && data.data.id) {
-        // Auto-fill name and mark fields as validated
         setFormData((prev) => ({
           ...prev,
           name: data.data.nome_da_pf || prev.name,
@@ -244,30 +238,6 @@ export default function RegistrationForm({ repId, repWhatsApp, repName }: Regist
       }
     } catch (error) {
       console.error("Erro ao validar email:", error)
-    }
-  }
-
-  const validateCoupon = async (coupon: string) => {
-    if (!coupon) return
-
-    try {
-      const response = await fetch(`https://federalassociados.com.br/getValidateCoupon/${coupon}`)
-      const data = await response.json()
-
-      if (data.status === "success") {
-        toast({
-          title: "Cupom válido!",
-          description: data.msg || "Cupom aplicado com sucesso.",
-        })
-      } else if (data.status === "error") {
-        toast({
-          title: "Cupom inválido",
-          description: data.msg || "Verifique o código do cupom.",
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
-      console.error("Erro ao validar cupom:", error)
     }
   }
 
@@ -463,385 +433,429 @@ export default function RegistrationForm({ repId, repWhatsApp, repName }: Regist
     }
   }
 
-  const getAvailablePlans = () => {
+  useEffect(() => {
     if (formData.typeChip === "eSim") {
-      return Object.entries(PLANS)
-        .flat()
-        .filter((plan) => plan.esim)
+      setFormData(prev => ({ ...prev, typeFrete: "eSim" }))
+    } else if (formData.typeFrete === "eSim") {
+      setFormData(prev => ({ ...prev, typeFrete: "" }))
     }
-    return Object.values(PLANS).flat()
-  }
+  }, [formData.typeChip])
 
+  const sponsorName = repName || "Francisco Eliedisom Dos Santos"
+  const sponsorCode = repId || REFERRAL_ID
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-        {/* Título e Subtítulo - apenas no primeiro passo */}
-        {currentStep === 1 && (
-          <div className="text-center mb-6 md:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Seja bem-vindo ao Registro de Associados</h1>
-            <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">
-              Patrocinador: {repName || "Thomas Theodor Costa"}
-            </p>
-          </div>
-        )}
-
-        {/* Etapa 1: Plano e Chip */}
-        {currentStep === 1 && (
-        <Card>
-          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
-            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Escolha seu Plano</h2>
-
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Tipo de Chip</Label>
-                <RadioGroup
-                  value={formData.typeChip}
-                  onValueChange={(value) => {
-                    handleInputChange("typeChip", value)
-                    handleInputChange("plan_id", "")
-                  }}
-                  className="flex gap-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="fisico" id="fisico" />
-                    <Label htmlFor="fisico" className="font-normal cursor-pointer">
-                      Físico
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="eSim" id="eSim-chip" />
-                    <Label htmlFor="eSim-chip" className="font-normal cursor-pointer">
-                      e-SIM
-                    </Label>
-                  </div>
-                </RadioGroup>
+      <div className="min-h-screen w-full bg-gradient-to-br from-blue-900 via-cyan-800 to-blue-800 flex items-center justify-center p-4">
+        <div className="w-full max-w-3xl">
+          <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-cyan-400 to-cyan-500 p-6 md:p-8 text-white relative">
+              <div className="absolute top-6 right-6">
+                <Shield className="w-12 h-12 opacity-20" />
               </div>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">Federal Associados</h1>
+              <p className="text-white/90 mb-6">Cadastro de Novo Associado</p>
 
-              <div className="space-y-2">
-                <Label htmlFor="plan">
-                  Plano <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={formData.plan_id}
-                  onValueChange={(value) => handleInputChange("plan_id", value)}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um plano" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <div className="px-2 py-1.5 text-sm font-semibold text-center pointer-events-none" style={{ color: '#8B5CF6' }}>VIVO</div>
-                    {PLANS.VIVO.map((plan) => (
-                      <SelectItem key={plan.id} value={plan.id} className="text-gray-900 font-medium">
-                        VIVO - {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
-                      </SelectItem>
-                    ))}
-
-                    <div className="px-2 py-1.5 text-sm font-semibold text-center mt-2 pointer-events-none" style={{ color: '#1E90FF' }}>TIM</div>
-                    {PLANS.TIM.map((plan) => (
-                      <SelectItem key={plan.id} value={plan.id} className="text-gray-900 font-medium">
-                        TIM - {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
-                      </SelectItem>
-                    ))}
-
-                    <div className="px-2 py-1.5 text-sm font-semibold text-center mt-2 pointer-events-none" style={{ color: '#DC143C' }}>CLARO</div>
-                    {PLANS.CLARO.map((plan) => (
-                      <SelectItem key={plan.id} value={plan.id} className="text-gray-900 font-medium">
-                        CLARO - {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-            </div>
-          </CardContent>
-        </Card>
-        )}
-
-        {/* Etapa 2: Dados do Associado */}
-        {currentStep === 2 && (
-        <Card>
-          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
-            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Dados do Associado</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="cpf">
-                  CPF <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="cpf"
-                  value={formData.cpf}
-                  onChange={(e) => handleInputChange("cpf", e.target.value)}
-                  placeholder="000.000.000-00"
-                  maxLength={14}
-                  required
-                  className={cpfValidated ? "border-green-500" : ""}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="birth">
-                  Data de Nascimento <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="birth"
-                  type="date"
-                  value={formData.birth}
-                  onChange={(e) => handleInputChange("birth", e.target.value)}
-                  onBlur={(e) => validateCPFWithAPI(formData.cpf, e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2 md:col-span-2 lg:col-span-1">
-                <Label htmlFor="name">
-                  Nome Completo <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
-                  placeholder="Seu nome completo"
-                  required
-                  readOnly={cpfValidated}
-                  className={cpfValidated ? "border-green-500" : ""}
-                />
+              <div className="bg-cyan-300/20 backdrop-blur-sm rounded-lg p-4 mt-4">
+                <p className="text-sm font-medium text-cyan-50 mb-1">Patrocinador</p>
+                <p className="text-lg font-bold text-white">{sponsorName}</p>
+                <p className="text-sm text-cyan-100 mt-1">Código: {sponsorCode}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        )}
 
-        {/* Etapa 3: Contato */}
-        {currentStep === 3 && (
-        <Card>
-          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
-            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Contato</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-4">
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="email">
-                  Email <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  onBlur={(e) => validateEmail(e.target.value)}
-                  placeholder="seu@email.com"
-                  required
-                  className={emailValidated ? "border-green-500" : ""}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">
-                  Telefone <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                  placeholder="(00) 0000-0000"
-                  maxLength={15}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="cell">
-                  Celular <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="cell"
-                  value={formData.cell}
-                  onChange={(e) => handleInputChange("cell", e.target.value)}
-                  placeholder="(00) 00000-0000"
-                  maxLength={15}
-                  required
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        )}
-
-        {/* Etapa 4: Endereço */}
-        {currentStep === 4 && (
-        <Card>
-          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
-            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Endereço</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="cep">
-                  CEP <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="cep"
-                  value={formData.cep}
-                  onChange={(e) => handleInputChange("cep", e.target.value)}
-                  onBlur={(e) => fetchAddressByCEP(e.target.value)}
-                  placeholder="00000-000"
-                  maxLength={9}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="district">
-                  Bairro <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="district"
-                  value={formData.district}
-                  onChange={(e) => handleInputChange("district", e.target.value)}
-                  placeholder="Seu bairro"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="city">
-                  Cidade <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => handleInputChange("city", e.target.value)}
-                  placeholder="Sua cidade"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="state">
-                  Estado <span className="text-red-500">*</span>
-                </Label>
-                <Select value={formData.state} onValueChange={(value) => handleInputChange("state", value)} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {BRAZILIAN_STATES.map((state) => (
-                      <SelectItem key={state.value} value={state.value}>
-                        {state.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2 md:col-span-2 lg:col-span-3">
-                <Label htmlFor="street">
-                  Endereço <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="street"
-                  value={formData.street}
-                  onChange={(e) => handleInputChange("street", e.target.value)}
-                  placeholder="Rua, Avenida, etc"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="number">Número</Label>
-                <Input
-                  id="number"
-                  value={formData.number}
-                  onChange={(e) => handleInputChange("number", e.target.value)}
-                  placeholder="123"
-                />
-              </div>
-
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="complement">Complemento</Label>
-                <Input
-                  id="complement"
-                  value={formData.complement}
-                  onChange={(e) => handleInputChange("complement", e.target.value)}
-                  placeholder="Apto, Bloco, etc"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        )}
-
-        {/* Etapa 5: Forma de Envio */}
-        {currentStep === 5 && (
-        <Card>
-          <CardContent className="pt-4 md:pt-6 px-4 md:px-6">
-            <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">Forma de Envio</h2>
-            <RadioGroup
-              value={formData.typeFrete}
-              onValueChange={(value) => handleInputChange("typeFrete", value)}
-              className="space-y-3"
-            >
-              {formData.typeChip === "fisico" && (
-                <>
-                  <div className="space-y-1">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Carta" id="carta" />
-                      <Label htmlFor="carta" className="font-normal cursor-pointer">
-                        Enviar via Carta Registrada
-                      </Label>
+            <form onSubmit={handleSubmit} className="p-6 md:p-8">
+              {currentStep === 1 && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <Smartphone className="w-6 h-6 text-blue-600" />
                     </div>
-                    <p className="text-sm text-muted-foreground ml-6">
-                      Para quem vai receber o chip pelos Correios
-                    </p>
+                    <h2 className="text-xl font-bold text-gray-900">Escolha seu Plano</h2>
                   </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="semFrete" id="semFrete" />
-                      <Label htmlFor="semFrete" className="font-normal cursor-pointer">
-                        Retirar na Associação ou com um Associado
-                      </Label>
+
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <Label className="text-base font-semibold text-gray-700">Tipo de Chip</Label>
+                      <RadioGroup
+                        value={formData.typeChip}
+                        onValueChange={(value) => {
+                          handleInputChange("typeChip", value)
+                          handleInputChange("plan_id", "")
+                        }}
+                        className="flex gap-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="fisico" id="fisico" />
+                          <Label htmlFor="fisico" className="font-normal cursor-pointer text-gray-700">
+                            Físico
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="eSim" id="eSim-chip" />
+                          <Label htmlFor="eSim-chip" className="font-normal cursor-pointer text-gray-700">
+                            e-SIM
+                          </Label>
+                        </div>
+                      </RadioGroup>
                     </div>
-                    <p className="text-sm text-muted-foreground ml-6">
-                      Se você vai retirar o chip pessoalmente com um representante ou no caso dos planos da Vivo, vai comprar um chip para ativar de forma imediata
-                    </p>
+
+                    <div className="space-y-3">
+                      <Label htmlFor="plan" className="text-base font-semibold text-gray-700">
+                        Plano <span className="text-red-500">*</span>
+                      </Label>
+                      <Select
+                        value={formData.plan_id}
+                        onValueChange={(value) => handleInputChange("plan_id", value)}
+                        required
+                      >
+                        <SelectTrigger className="h-12">
+                          <SelectValue placeholder="Selecione um plano" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <div className="px-2 py-2 text-sm font-bold text-purple-600">VIVO</div>
+                          {PLANS.VIVO.map((plan) => (
+                            <SelectItem key={plan.id} value={plan.id} className="py-3">
+                              {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                            </SelectItem>
+                          ))}
+
+                          <div className="px-2 py-2 text-sm font-bold text-blue-600 mt-2">TIM</div>
+                          {PLANS.TIM.map((plan) => (
+                            <SelectItem key={plan.id} value={plan.id} className="py-3">
+                              {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                            </SelectItem>
+                          ))}
+
+                          <div className="px-2 py-2 text-sm font-bold text-red-600 mt-2">CLARO</div>
+                          {PLANS.CLARO.map((plan) => (
+                            <SelectItem key={plan.id} value={plan.id} className="py-3">
+                              {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                </>
-              )}
-              {formData.typeChip === "eSim" && (
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="eSim" id="eSim" />
-                  <Label htmlFor="eSim" className="font-normal cursor-pointer">
-                    Sem a necessidade de envio (e-SIM)
-                  </Label>
                 </div>
               )}
-            </RadioGroup>
-          </CardContent>
-        </Card>
-        )}
 
-        {/* Botões de Navegação */}
-        <div className="flex gap-4 justify-end items-center">
-          {currentStep > 1 && (
-            <Button type="button" variant="outline" onClick={handleBack}>
-              Voltar
-            </Button>
-          )}
-          {currentStep === 1 && (
-            <p className="text-sm text-gray-600 mr-auto">
-              Contrate seu plano sem consulta ao SPC/Serasa e sem fidelidade.
-            </p>
-          )}
-          {currentStep < 5 ? (
-            <Button type="button" onClick={handleNext} className="bg-green-600 hover:bg-green-700 text-white">
-              Continuar
-            </Button>
-          ) : (
-            <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
-              {loading ? "Processando..." : "Salvar"}
-            </Button>
-          )}
+              {currentStep === 2 && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <User className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">Dados Pessoais</h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="cpf" className="text-gray-700 font-medium">
+                        CPF <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="cpf"
+                        value={formData.cpf}
+                        onChange={(e) => handleInputChange("cpf", e.target.value)}
+                        placeholder="000.000.000-00"
+                        maxLength={14}
+                        required
+                        className={`h-11 ${cpfValidated ? "border-green-500" : ""}`}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="birth" className="text-gray-700 font-medium">
+                        Data de Nascimento <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="birth"
+                        type="date"
+                        value={formData.birth}
+                        onChange={(e) => handleInputChange("birth", e.target.value)}
+                        onBlur={(e) => validateCPFWithAPI(formData.cpf, e.target.value)}
+                        required
+                        className="h-11"
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="name" className="text-gray-700 font-medium">
+                        Nome Completo <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange("name", e.target.value)}
+                        placeholder="Digite seu nome completo"
+                        required
+                        readOnly={cpfValidated}
+                        className={`h-11 ${cpfValidated ? "border-green-500" : ""}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentStep === 3 && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <Phone className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">Informações de Contato</h2>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-gray-700 font-medium">
+                        Email <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange("email", e.target.value)}
+                        onBlur={(e) => validateEmail(e.target.value)}
+                        placeholder="seu@email.com"
+                        required
+                        className={`h-11 ${emailValidated ? "border-green-500" : ""}`}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="phone" className="text-gray-700 font-medium">
+                          Telefone <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="phone"
+                          value={formData.phone}
+                          onChange={(e) => handleInputChange("phone", e.target.value)}
+                          placeholder="(00) 0000-0000"
+                          maxLength={15}
+                          required
+                          className="h-11"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="cell" className="text-gray-700 font-medium">
+                          Celular <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="cell"
+                          value={formData.cell}
+                          onChange={(e) => handleInputChange("cell", e.target.value)}
+                          placeholder="(00) 00000-0000"
+                          maxLength={15}
+                          required
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentStep === 4 && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <MapPin className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">Endereço</h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="cep" className="text-gray-700 font-medium">
+                        CEP <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="cep"
+                        value={formData.cep}
+                        onChange={(e) => handleInputChange("cep", e.target.value)}
+                        onBlur={(e) => fetchAddressByCEP(e.target.value)}
+                        placeholder="00000-000"
+                        maxLength={9}
+                        required
+                        className="h-11"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="city" className="text-gray-700 font-medium">
+                        Cidade <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="city"
+                        value={formData.city}
+                        onChange={(e) => handleInputChange("city", e.target.value)}
+                        placeholder="Cidade"
+                        required
+                        className="h-11"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="state" className="text-gray-700 font-medium">
+                        Estado <span className="text-red-500">*</span>
+                      </Label>
+                      <Select value={formData.state} onValueChange={(value) => handleInputChange("state", value)} required>
+                        <SelectTrigger className="h-11">
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BRAZILIAN_STATES.map((state) => (
+                            <SelectItem key={state.value} value={state.value}>
+                              {state.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="district" className="text-gray-700 font-medium">
+                        Bairro <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="district"
+                        value={formData.district}
+                        onChange={(e) => handleInputChange("district", e.target.value)}
+                        placeholder="Bairro"
+                        required
+                        className="h-11"
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="street" className="text-gray-700 font-medium">
+                        Endereço <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="street"
+                        value={formData.street}
+                        onChange={(e) => handleInputChange("street", e.target.value)}
+                        placeholder="Rua, Avenida..."
+                        required
+                        className="h-11"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="number" className="text-gray-700 font-medium">Número</Label>
+                      <Input
+                        id="number"
+                        value={formData.number}
+                        onChange={(e) => handleInputChange("number", e.target.value)}
+                        placeholder="Nº"
+                        className="h-11"
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2 lg:col-span-3">
+                      <Label htmlFor="complement" className="text-gray-700 font-medium">Complemento</Label>
+                      <Input
+                        id="complement"
+                        value={formData.complement}
+                        onChange={(e) => handleInputChange("complement", e.target.value)}
+                        placeholder="Apto, Bloco, etc."
+                        className="h-11"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentStep === 5 && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <Package className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">Forma de Envio</h2>
+                  </div>
+
+                  <RadioGroup
+                    value={formData.typeFrete}
+                    onValueChange={(value) => handleInputChange("typeFrete", value)}
+                    className="space-y-4"
+                  >
+                    {formData.typeChip === "fisico" && (
+                      <>
+                        <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 transition-colors">
+                          <div className="flex items-start space-x-3">
+                            <RadioGroupItem value="Carta" id="carta" className="mt-1" />
+                            <div className="flex-1">
+                              <Label htmlFor="carta" className="font-semibold text-gray-900 cursor-pointer block mb-1">
+                                Enviar via Carta Registrada
+                              </Label>
+                              <p className="text-sm text-gray-600">
+                                Para quem vai receber o chip pelos Correios
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 transition-colors">
+                          <div className="flex items-start space-x-3">
+                            <RadioGroupItem value="semFrete" id="semFrete" className="mt-1" />
+                            <div className="flex-1">
+                              <Label htmlFor="semFrete" className="font-semibold text-gray-900 cursor-pointer block mb-1">
+                                Retirar na Associação ou com um Associado
+                              </Label>
+                              <p className="text-sm text-gray-600">
+                                Se você vai retirar o chip pessoalmente com um representante ou no caso dos planos da Vivo, vai comprar um chip para ativar de forma imediata
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    {formData.typeChip === "eSim" && (
+                      <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <RadioGroupItem value="eSim" id="eSim" />
+                          <Label htmlFor="eSim" className="font-semibold text-gray-900 cursor-pointer">
+                            Sem a necessidade de envio (e-SIM)
+                          </Label>
+                        </div>
+                      </div>
+                    )}
+                  </RadioGroup>
+                </div>
+              )}
+
+              <div className="flex gap-3 justify-between items-center mt-8 pt-6 border-t">
+                {currentStep > 1 ? (
+                  <Button type="button" variant="outline" onClick={handleBack} className="px-6">
+                    Voltar
+                  </Button>
+                ) : (
+                  <div></div>
+                )}
+                {currentStep < 5 ? (
+                  <Button type="button" onClick={handleNext} className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+                    Próximo
+                  </Button>
+                ) : (
+                  <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700 text-white px-8">
+                    {loading ? "Processando..." : "Concluir Cadastro"}
+                  </Button>
+                )}
+              </div>
+            </form>
+
+            <div className="bg-gray-50 px-6 py-4 text-center border-t">
+              <p className="text-xs text-gray-600">
+                2025 © Federal Associados (CNPJ 29.383.343/0001-64) - Todos os direitos reservados
+              </p>
+            </div>
+          </div>
         </div>
-      </form>
+      </div>
 
       <ErrorModal open={showErrorModal} onOpenChange={setShowErrorModal} message={errorMessage} />
     </>
