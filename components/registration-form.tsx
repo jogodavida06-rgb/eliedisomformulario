@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import ErrorModal from "@/components/error-modal"
 
-const REFERRAL_ID = "110956"
+const REFERRAL_ID = "127251"
 const DEFAULT_WHATSAPP = "5584981321396"
 
 interface RegistrationFormProps {
@@ -53,6 +53,7 @@ const BRAZILIAN_STATES = [
 
 const PLANS = {
   VIVO: [
+    { id: "178", name: "40GB COM LIGACAO", price: 49.9, esim: true },
     { id: "69", name: "80GB COM LIGACAO", price: 69.9, esim: true },
     { id: "61", name: "150GB COM LIGACAO", price: 99.9, esim: true },
   ],
@@ -480,7 +481,7 @@ export default function RegistrationForm({ repId, repWhatsApp, repName }: Regist
           <div className="text-center mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Seja bem-vindo ao Registro de Associados</h1>
             <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">
-              Patrocinador: {repName || "Francisco Eliedisom Dos Santos"}
+              Patrocinador: {repName || "Thomas Theodor Costa"}
             </p>
           </div>
         )}
