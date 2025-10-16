@@ -2,6 +2,8 @@ import { notFound } from "next/navigation"
 import RegistrationForm from "@/components/registration-form"
 import { supabase } from "@/lib/supabase"
 
+export const dynamic = 'force-dynamic'
+
 export default async function RepPage({
   params
 }: {
