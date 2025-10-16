@@ -36,7 +36,7 @@ export default async function RepPage({
           />
         </div>
         <footer className="text-center mt-6 md:mt-8 text-xs sm:text-sm text-gray-600 px-2">
-          <p>2025 © Federal Associados (CNPJ 29.383-343-0001/64) - Todos os direitos reservados |</p>
+          <p>2025 © Federal Associados (CNPJ 29.383.343/0001-64) - Todos os direitos reservados</p>
         </footer>
       </div>
     </main>

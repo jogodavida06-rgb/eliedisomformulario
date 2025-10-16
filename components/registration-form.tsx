@@ -515,21 +515,21 @@ export default function RegistrationForm({ repId, repWhatsApp, repName }: Regist
                           <div className="px-2 py-2 text-sm font-bold text-purple-600">VIVO</div>
                           {PLANS.VIVO.map((plan) => (
                             <SelectItem key={plan.id} value={plan.id} className="py-3">
-                              {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                              VIVO - {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
                             </SelectItem>
                           ))}
 
                           <div className="px-2 py-2 text-sm font-bold text-blue-600 mt-2">TIM</div>
                           {PLANS.TIM.map((plan) => (
                             <SelectItem key={plan.id} value={plan.id} className="py-3">
-                              {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                              TIM - {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
                             </SelectItem>
                           ))}
 
                           <div className="px-2 py-2 text-sm font-bold text-red-600 mt-2">CLARO</div>
                           {PLANS.CLARO.map((plan) => (
                             <SelectItem key={plan.id} value={plan.id} className="py-3">
-                              {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
+                              CLARO - {plan.name} - R$ {plan.price.toFixed(2).replace('.', ',')}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -848,11 +848,6 @@ export default function RegistrationForm({ repId, repWhatsApp, repName }: Regist
               </div>
             </form>
 
-            <div className="bg-gray-50 px-6 py-4 text-center border-t">
-              <p className="text-xs text-gray-600">
-                2025 © Federal Associados (CNPJ 29.383.343/0001-64) - Todos os direitos reservados
-              </p>
-            </div>
           </div>
         </div>
       </div>
