@@ -1,3 +1,4 @@
+"use client";
 import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = "https://fosidapvbjuijodpvjvj.supabase.co";
@@ -5,8 +6,9 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page({ params }) {
   const id = params?.id;
+
   if (!id) {
     return (
       <div style={{ padding: 40, textAlign: "center" }}>
@@ -20,14 +22,14 @@ export default async function Page({ params }: { params: { id: string } }) {
       .from("representantes")
       .select("id, nome, whatsapp")
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
     if (error || !data) {
       return (
         <div style={{ padding: 40, textAlign: "center" }}>
           <h1>404 — Patrocinador não encontrado</h1>
           <p>O código <strong>{id}</strong> não existe no banco.</p>
-          <a href="/">Voltar para a página inicial</a>
+          <a href="/" style={{ color: "#07a" }}>Voltar para a página inicial</a>
         </div>
       );
     }
