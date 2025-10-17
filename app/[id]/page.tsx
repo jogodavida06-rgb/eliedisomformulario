@@ -2,13 +2,13 @@ import { notFound } from "next/navigation"
 import RegistrationForm from "@/components/registration-form"
 import { supabase } from "@/lib/supabase"
 
-export default async function RepPage({
+export default async function Page({
   params
 }: {
-  params: Promise<{ rep_id: string }>
+  params: Promise<{ id: string }>
 }) {
-  const { rep_id } = await params
-  const repId = parseInt(rep_id)
+  const { id } = await params
+  const repId = parseInt(id)
 
   if (isNaN(repId)) {
     notFound()
