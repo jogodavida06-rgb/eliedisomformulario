@@ -9,16 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
+import ErrorModal from "@/components/error-modal"
 import { Shield, CircleCheck, Smartphone, User, Phone, MapPin, Package } from "lucide-react"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 
 const REFERRAL_ID = "110956"
 const DEFAULT_WHATSAPP = "5584981321396"
@@ -860,19 +852,7 @@ export default function RegistrationForm({ repId, repWhatsApp, repName }: Regist
         </div>
       </div>
 
-      <AlertDialog open={showErrorModal} onOpenChange={setShowErrorModal}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Atenção</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-700">
-              {errorMessage}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction>Ok</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ErrorModal open={showErrorModal} onOpenChange={setShowErrorModal} message={errorMessage} />
     </>
   )
 }
