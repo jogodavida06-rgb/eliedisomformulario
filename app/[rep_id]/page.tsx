@@ -15,10 +15,9 @@ export default async function RepPage({
   }
 
   const { data: representative, error } = await supabase
-    .from("representatives_auth")
-    .select("rep_id, whatsapp, name, active")
-    .eq("rep_id", repId)
-    .eq("active", true)
+    .from("representantes")
+    .select("id, nome, whatsapp")
+    .eq("id", repId)
     .maybeSingle()
 
   if (error || !representative) {
@@ -30,9 +29,9 @@ export default async function RepPage({
       <div className="container mx-auto max-w-4xl w-full px-3 sm:px-6 md:px-8">
         <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 md:p-8">
           <RegistrationForm
-            repId={representative.rep_id.toString()}
+            repId={representative.id.toString()}
             repWhatsApp={representative.whatsapp}
-            repName={representative.name}
+            repName={representative.nome}
           />
         </div>
         <footer className="text-center mt-6 md:mt-8 text-xs sm:text-sm text-gray-600 px-2">
